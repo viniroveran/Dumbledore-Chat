@@ -2,7 +2,6 @@ import {auth} from "@/auth";
 import {redirect} from "next/navigation";
 import Image from "next/image";
 import LoginForm from "@components/LoginForm";
-import {doSocialLogin} from "@actions/login";
 
 export default async function Home() {
   const session = await auth();

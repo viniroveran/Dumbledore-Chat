@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { doSocialLogin } from "@actions/login";
 
 const LoginForm = () => {
@@ -9,7 +10,11 @@ const LoginForm = () => {
         name="action"
         value="google">
         <div className="flex py-3 my-3 mx-3">
-          <img src="https://www.svgrepo.com/show/355037/google.svg" className="w-6 h-6" alt=""/>
+          <Image
+            src={"https://www.svgrepo.com/show/355037/google.svg"}
+            className={"w-6 h-6"}
+            alt={""}
+          />
           <div className="ml-1"><span>Login with Google</span></div>
         </div>
       </button>
