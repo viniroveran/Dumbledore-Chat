@@ -1,8 +1,10 @@
 # Dumbledore Chat
-A one-page scalable realtime chat 
+A scalable realtime chat
 
 ## Architecture
 ___
++ Package Manager
+  + [pnpm](https://pnpm.io/installation)
 + Backend
   + NodeJS Typescript
   + Express

@@ -17,4 +17,14 @@ AUTH_TRUST_HOST=false
 NEXTAUTH_URL="http://localhost:3000"
 
 BACKEND_URL="http://backend:8000"  
-NEXT_PUBLIC_BACKEND_URL="http://localhost:8000"```
+NEXT_PUBLIC_BACKEND_URL="http://localhost:8000"
+```
+
+## Running the application
+
+### It is recommended to run using the provided docker-compose.yml
+To run the application locally without docker, run:
+
+```
+pnpm run dev
+```

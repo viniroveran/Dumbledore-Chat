@@ -17,3 +17,11 @@ REDIS_URL="redis://[user]:[password]@[host]:[port]"
 PORT=8000
 NODE_SWAGGER_DOMAIN="http://localhost:8000"
 ```
+## Running the application
+
+### It is recommended to run using the provided docker-compose.yml
+To run the application locally without docker, run:
+
+```
+pnpm run dev
+```
