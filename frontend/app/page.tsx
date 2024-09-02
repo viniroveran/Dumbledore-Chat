@@ -1,7 +1,7 @@
 import {auth} from "@/auth";
 import {redirect} from "next/navigation";
 import Image from "next/image";
-import LoginForm from "@components/LoginForm";
+import LoginForm from "@components/login-form";
 
 export default async function Home() {
   const session = await auth();
