@@ -1,11 +1,33 @@
 services:
+  nginx:
+    image: jonasal/nginx-certbot:latest
+    container_name: nginx
+    restart: unless-stopped
+    env_file:
+      - ./nginx/nginx-certbot.env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ssl_certificates:/etc/letsencrypt
+      - ./nginx/configs:/etc/nginx/user_conf.d:rw
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:r
+      - ./nginx/error_logs:/var/log/nginx:rw
+      - ./nginx/error_pages:/var/www/html/error_pages:r
+    extra_hosts:
+      # export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+      - "dockerhost:$DOCKERHOST"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - realtime_chat
+
   backend:
     image: node:alpine3.20
+    container_name: backend
     command: sh -c "corepack enable && pnpm i && pnpm run build && pnpm run start"
     working_dir: /app
-    depends_on:
-      - redis
-      - postgres
     restart: unless-stopped
     volumes:
       - ./backend:/app
@@ -13,11 +35,15 @@ services:
       PORT: ${PORT:-8000}
     ports:
       - ${PORT:-8000}:${PORT:-8000}
+    depends_on:
+      - redis
+      - postgres
     networks:
       - realtime_chat
 
   frontend:
     image: node:alpine3.20
+    container_name: frontend
     command: sh -c "corepack enable && pnpm i && pnpm run build && pnpm run start"
     working_dir: /app
     restart: unless-stopped
@@ -66,3 +92,4 @@ networks:
 volumes:
   redis_data:
   postgres_data:
+  ssl_certificates:
