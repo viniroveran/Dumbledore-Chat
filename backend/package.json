@@ -5,8 +5,8 @@
   "scripts": {
     "swagger": "npx ts-node src/swagger-autogen.ts",
     "test:dev": "npx jest --coverage --watchAll --detectOpenHandles",
-    "dev": "pnpm run swagger && npx ts-node-dev --respawn --transpile-only src/server.ts",
-    "start": "node dist/server",
+    "dev": "pnpm run swagger && npx prisma migrate deploy && npx ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "npx prisma migrate deploy && node dist/server",
     "build": "tsc -p ."
   },
   "devDependencies": {
