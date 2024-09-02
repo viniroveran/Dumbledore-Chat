@@ -17,7 +17,7 @@ export default function MessageContainer(user: any) {
   return (
     <div className="bg-base-200 flex-1 p-4 overflow-y-auto">
       <div ref={listRef} className="flex flex-col space-y-2">
-        {user.previousMsgs.map((message: ISocketReceivedMessage) => {
+        {user.previousMsgs.map((message: any) => {
             return message.User.email == user.email ? (
               <div key={message.id} className="chat chat-end animate-fadeInUp">
                 <div className="chat-image avatar">

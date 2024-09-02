@@ -1,0 +1,66 @@
+default:
+  image: docker:26.0.0-dind-alpine3.19
+  services:
+    - docker:26.0.0-dind
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker build -t dumbledore-chat:latest .
+
+test:
+  stage: test
+  dependencies:
+    - build
+  script:
+    - cp .env-exemplo .env
+    - docker compose -f docker-compose-test.yml run --rm dumbledore-chat-test
+    - mkdir .public
+    - cp -r dumbledore-chat/coverage/* .public
+    - mv .public public
+  after_script:
+    - docker compose -f docker-compose-test.yml down
+  artifacts:
+    paths:
+      - public
+    when: always
+    reports:
+      junit:
+        - nodejs/junit.xml
+
+publish:
+  stage: deploy
+  only:
+    - main
+  variables:
+    VER: latest
+  script:
+    - cp .env-exemplo-prod .env
+    - docker build -t ${CI_REGISTRY_IMAGE}:$VER ${CI_PROJECT_DIR}
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push ${CI_REGISTRY_IMAGE}:$VER
+
+deploy:
+  stage: deploy
+  dependencies:
+    - publish
+  only:
+    - main
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --no-cache openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - chmod 400 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -p $SSH_PORT -t ed25519 $SSH_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - 'ssh -p $SSH_PORT $SSH_USER@$SSH_HOST "cd $WORK_DIR && git pull && docker compose pull && docker compose up -d"'
+  after_script:
+    - rm -rf ~/.ssh

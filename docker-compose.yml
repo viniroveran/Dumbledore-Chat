@@ -1,16 +1,29 @@
 services:
-#  turbo:
-#    image: node:alpine3.20
-#    command: sh -c "yarn install && yarn dev"
-#    working_dir: /app
-#    volumes:
-#      - ./:/app
-#    environment:
-#      PORT: ${PORT:-8000}
-#    ports:
-#      - ${PORT:-8000}:${PORT:-8000}
-#    networks:
-#      - realtime_chat
+  backend:
+    image: node:alpine3.20
+    command: sh -c "corepack enable && pnpm i && pnpm run build && pnpm run start"
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    environment:
+      PORT: ${PORT:-8000}
+    ports:
+      - ${PORT:-8000}:${PORT:-8000}
+    networks:
+      - realtime_chat
+
+  frontend:
+    image: node:alpine3.20
+    command: sh -c "corepack enable && pnpm i && pnpm run build && pnpm run start"
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    environment:
+      PORT: ${PORT:-3000}
+    ports:
+      - ${PORT:-3000}:${PORT:-3000}
+    networks:
+      - realtime_chat
 
   redis:
     image: redis:latest
