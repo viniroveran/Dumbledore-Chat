@@ -1,9 +1,22 @@
 "use client";
 
-import { useSidebarContext } from "@context/sidebar-context";
+import {useSidebarContext} from "@context/sidebar-context";
+import {useEffect} from "react";
+
 
 export default function Header() {
-  const { toggleSidebar } = useSidebarContext();
+  const {isSidebarOpen, toggleSidebar} = useSidebarContext();
+  useEffect(() => {
+    const listener = (event: { code: string; }) => {
+      if (event.code === "Escape" && isSidebarOpen) {
+        toggleSidebar();
+      }
+    };
+    document.addEventListener("keydown", listener);
+    return () => {
+      document.removeEventListener("keydown", listener);
+    };
+  }, [isSidebarOpen, toggleSidebar]);
 
   return (
     <div
