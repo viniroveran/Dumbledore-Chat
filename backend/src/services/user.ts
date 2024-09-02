@@ -16,6 +16,7 @@ function createUserCache(id: number, name: string, email: string, avatar: string
     redisCache.set(user_name_key(id), name);
     redisCache.set(user_email_key(id), email);
     redisCache.set(user_avatar_key(id), avatar);
+    redisCache.set(email, id);
   } catch (err) {
     console.log("Error fetching redis keys");
   }
@@ -27,9 +28,10 @@ async function getUserCache(id: number) {
     await redisCache.exists(user_avatar_key(id))
   )
     return ({
-      name: redisCache.get(user_name_key(id)),
-      email: redisCache.get(user_email_key(id)),
-      avatar: redisCache.get(user_avatar_key(id))
+      id: id,
+      name: await redisCache.get(user_name_key(id)),
+      email: await redisCache.get(user_email_key(id)),
+      avatar: await redisCache.get(user_avatar_key(id))
     })
   else
     return false
@@ -51,21 +53,26 @@ export async function createUser(name: string, email: string, avatar: string) {
   }
 }
 
-export async function getUserById(id: number) {
-  const userCache = await getUserCache(id);
-  if (userCache)
-    return userCache
-  else {
+export async function getUserByEmail(email: string) {
+  const userId: string | null = await redisCache.get(email);
+  if (userId) {
+    return await getUserCache(parseInt(userId));
+  } else {
     const user = await prismaClient.user.findUnique({
       where: {
-        id: id
+        email: email
       },
       select: {
+        id: true,
         name: true,
         email: true,
         avatar: true
       }
-    })
+    });
+
+    if (user && user.id && user.name && user.email && user.avatar)
+      createUserCache(user.id, user.name, user.email, user.avatar);
+
     return user
   }
 }

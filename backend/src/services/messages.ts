@@ -11,3 +11,15 @@ export async function getMessagesWithOffset(offset: number, limit: number) {
 
   return messages ? messages : false;
 }
+
+export async function createMessage(id: string, text: string, user_id: number) {
+  const message = await prismaClient.message.create({
+    data: {
+      id: id,
+      text: text,
+      userId: user_id
+    },
+  });
+
+  return message ? message : false;
+}

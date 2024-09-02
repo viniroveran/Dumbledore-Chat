@@ -1,13 +1,12 @@
-import { Server } from "socket.io";
-import {Redis} from "ioredis";
-import prismaClient from "./prisma";
+import {Server} from "socket.io";
 import {redisPub, redisSub} from "./redis";
+import {getUserByEmail} from "./user";
+import {createMessage} from "./messages";
 
 class SocketService {
   private _io: Server;
 
   constructor() {
-    console.log("Init Socket Service...");
     this._io = new Server({
       cors: {
         allowedHeaders: ["*"],
@@ -19,34 +18,30 @@ class SocketService {
 
   public initListeners() {
     const io = this.io;
-    console.log("Init Socket Listeners...");
 
     io.on("connect", (socket) => {
-      console.log(`New Socket Connected`, socket.id);
-      socket.on("event:message", async ({ message, user_email, user_name, user_image }: { message: string, user_email: string, user_name: string, user_image: string }) => {
+      console.log(`New socket connected: `, socket.id);
+      socket.on("event:message", async ({message, user_email}: { message: string, user_email: string }) => {
         const message_id = crypto.randomUUID();
-        console.log("Message received (content): ", message);
-        console.log("Message received (user_email): ", user_email);
-        console.log("Message received (user_name): ", user_name);
-        console.log("Message received (user_image): ", user_image);
-        // publish this message to redis
-        await redisPub.publish("MESSAGES", JSON.stringify({ message, message_id, user_email, user_name, user_image }));
+        await getUserByEmail(user_email).then(async (user) => {
+          if (user)
+            await redisPub.publish("MESSAGES", JSON.stringify({
+              message: message,
+              message_id: message_id,
+              user_id: user.id,
+              user_email: user_email,
+              user_name: user.name,
+              user_image: user.avatar
+            }));
+        });
       });
     });
 
     redisSub.on("message", async (channel, message) => {
       if (channel === "MESSAGES") {
-        console.log("new message from redis", message);
         io.emit("message", message);
-        try {
-          await prismaClient.message.create({
-            data: {
-              text: message.toString(),
-            },
-          });
-        } catch (err) {
-          console.log("Something is wrong");
-        }
+        const msg = JSON.parse(message)
+        await createMessage(msg.message_id, msg.message, msg.user_id);
       }
     });
   }

@@ -1,33 +1,5 @@
 import {Request, Response} from 'express';
-import {getUserById, createUser} from "../services/user";
-
-async function getUser(req: Request, res: Response) {
-  const id: number = parseInt(req.params.id);
-  let hasError: boolean = id === undefined;
-  let foundProfile: any = null;
-
-  if (!hasError) {
-    try {
-      getUserById(id).then((user) => {
-        console.log(user)
-        res.status(200).json({
-          status_code: 200,
-          user: user
-        })
-      })
-    } catch (error) {
-      /* istanbul ignore next */
-      hasError = true;
-    }
-  }
-
-  if (hasError) {
-    res.status(404).json({
-      status_code: "404",
-      message: "Perfil nao encontrado"
-    });
-  }
-}
+import {createUser} from "../services/user";
 
 async function postUser(req: Request, res: Response) {
   const name = req.body.name
@@ -59,6 +31,5 @@ async function postUser(req: Request, res: Response) {
 }
 
 export default {
-  getUser,
   postUser
 }
