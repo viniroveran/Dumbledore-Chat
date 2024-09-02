@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Logout from "@components/Logout";
+import Logout from "@components/chat/sidebar/logout";
 import {User} from "@lib/definitions";
 import { useSidebarContext } from "@context/sidebar-context";
 
