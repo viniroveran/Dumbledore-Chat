@@ -2,7 +2,7 @@
 
 import React, {useCallback, useContext, useEffect, useState} from "react";
 import {io, Socket} from "socket.io-client";
-import {ISocketContext, ISocketReceivedMessage, SocketProviderProps} from "@lib/definitions";
+import {ISocketContext, ISocketReceivedMessage, ISocketSentMessage, SocketProviderProps} from "@lib/definitions";
 
 const SocketContext = React.createContext<ISocketContext | null>(null);
 
@@ -18,7 +18,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({children}) => {
   const [messages, setMessages] = useState<ISocketReceivedMessage[]>([]);
 
   const sendMessage: ISocketContext["sendMessage"] = useCallback(
-    (msg) => {
+    (msg: ISocketSentMessage) => {
       if (!socket) throw new Error(`Socket is undefined`);
       socket.emit("event:message", {message: msg.msg, user_email: msg.user_email});
     },
@@ -26,16 +26,34 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({children}) => {
   );
 
   const onMessageReceived = useCallback((msg: string) => {
-    const message: ISocketReceivedMessage = JSON.parse(msg) as {message: string, message_id: string, user_email: string, user_name: string, user_image: string };
+    const message: ISocketReceivedMessage = JSON.parse(msg) as {
+      message: string,
+      message_id: string,
+      user_email: string,
+      user_name: string,
+      user_image: string
+    };
 
     setMessages((prev) => [...prev, message]);
   }, []);
 
   useEffect(() => {
-    const _socket = io("http://localhost:8000");
+    const _socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
     _socket.on("message", onMessageReceived);
 
     setSocket(_socket);
+
+    // TODO: get messages from backend
+    const previousMessages: ISocketReceivedMessage[] = [
+      {
+        message: "Oi, eu sou um gatinho!",
+        message_id: "001",
+        user_email: "gatinho@google.com",
+        user_name: "Gatinho",
+        user_image: "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg"
+      }
+    ]
+    setMessages(previousMessages)
 
     return () => {
       _socket.off("message", onMessageReceived);

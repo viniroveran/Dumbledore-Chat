@@ -13,10 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const socket_io_1 = require("socket.io");
-const ioredis_1 = __importDefault(require("ioredis"));
 const prisma_1 = __importDefault(require("./prisma"));
-console.log(process.env);
-const redis = new ioredis_1.default(process.env.REDIS_URL);
+const redis_1 = require("./redis");
 class SocketService {
     constructor() {
         console.log("Init Socket Service...");
@@ -26,23 +24,24 @@ class SocketService {
                 origin: "*",
             },
         });
-        redis.subscribe("MESSAGES");
+        redis_1.redisSub.subscribe("MESSAGES");
     }
     initListeners() {
         const io = this.io;
         console.log("Init Socket Listeners...");
         io.on("connect", (socket) => {
             console.log(`New Socket Connected`, socket.id);
-            const message_id = crypto.randomUUID();
-            socket.on("event:message", (_a) => __awaiter(this, [_a], void 0, function* ({ message, user_email, user_name }) {
+            socket.on("event:message", (_a) => __awaiter(this, [_a], void 0, function* ({ message, user_email, user_name, user_image }) {
+                const message_id = crypto.randomUUID();
                 console.log("Message received (content): ", message);
                 console.log("Message received (user_email): ", user_email);
                 console.log("Message received (user_name): ", user_name);
+                console.log("Message received (user_image): ", user_image);
                 // publish this message to redis
-                yield redis.publish("MESSAGES", JSON.stringify({ message, user_email, user_name }));
+                yield redis_1.redisPub.publish("MESSAGES", JSON.stringify({ message, message_id, user_email, user_name, user_image }));
             }));
         });
-        redis.on("message", (channel, message) => __awaiter(this, void 0, void 0, function* () {
+        redis_1.redisSub.on("message", (channel, message) => __awaiter(this, void 0, void 0, function* () {
             if (channel === "MESSAGES") {
                 console.log("new message from redis", message);
                 io.emit("message", message);

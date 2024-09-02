@@ -7,6 +7,14 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       // TODO: call backend API to create user
       return true
     },
+    async session({ session, token }) {
+      console.log(session)
+      console.log(token)
+      // Send properties to the client, like an access_token from a provider.
+      session.accessToken = token.accessToken
+
+      return session
+    }
   },
   providers: [
     Google({

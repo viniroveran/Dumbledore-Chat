@@ -1,21 +1,15 @@
-import http from "http";
+import app from './app';
 import SocketService from "./services/socket";
 import dotenv from 'dotenv';
+
+// Load .env
 dotenv.config();
 
-async function init() {
-  const socketService = new SocketService();
+const port = process.env.PORT ? process.env.PORT : 8000;
+const socketService = new SocketService();
+const server = require('http').createServer(app);
 
-  const httpServer = http.createServer();
-  const PORT = process.env.PORT ? process.env.PORT : 8000;
+server.listen(port, () => console.log(`Server is listening on port ${port}.`));
 
-  socketService.io.attach(httpServer);
-
-  httpServer.listen(PORT, () =>
-    console.log(`Server is listening on port ${PORT}`)
-  );
-
-  socketService.initListeners();
-}
-
-init();
+socketService.io.attach(server)
+socketService.initListeners();
