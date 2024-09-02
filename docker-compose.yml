@@ -1,0 +1,50 @@
+services:
+#  turbo:
+#    image: node:alpine3.20
+#    command: sh -c "yarn install && yarn dev"
+#    working_dir: /app
+#    volumes:
+#      - ./:/app
+#    environment:
+#      PORT: ${PORT:-8000}
+#    ports:
+#      - ${PORT:-8000}:${PORT:-8000}
+#    networks:
+#      - realtime_chat
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/root/redis
+    #      - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=rpassword
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - realtime_chat
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    networks:
+      - realtime_chat
+
+networks:
+  realtime_chat:
+    driver: bridge
+
+volumes:
+  redis_data:
+  postgres_data:
