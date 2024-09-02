@@ -2,21 +2,23 @@
 
 import {useEffect, useState, useCallback} from "react";
 import {useSocket} from "@context/socket-context";
-import {User} from "@lib/definitions";
+import {ISocketSentMessage, User} from "@lib/definitions";
 
 export default function MessageInput(user: User) {
   const {sendMessage} = useSocket();
   const [message, setMessage] = useState("");
   const handleSendMessage = useCallback(() => {
-    sendMessage(message, user.email, user.name, user.image);
+    const msg: ISocketSentMessage = {
+      msg: message,
+      user_email: user.email
+    }
+    sendMessage(msg);
     setMessage("");
-  }, [message, sendMessage, user.email, user.image, user.name]);
+  }, [message, sendMessage, user.email]);
 
   useEffect(() => {
     const listener = (event: { code: string; }) => {
       if (event.code === "Enter" || event.code === "NumpadEnter") {
-        console.log("Enter key was pressed. Run your function.");
-        // event.preventDefault();
         handleSendMessage();
       }
     };

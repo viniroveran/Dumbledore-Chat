@@ -2,11 +2,10 @@
 
 import React, {useEffect, useRef} from "react";
 import Image from "next/image";
-import {User} from "@lib/definitions";
-import {ISocketReceivedMessage, useSocket} from "@context/socket-context";
+import {User, ISocketReceivedMessage} from "@lib/definitions";
+import {useSocket} from "@context/socket-context";
 
 export default function MessageContainer(user: User) {
-  // Send message
   const {messages} = useSocket();
 
   // Scroll to bottom

@@ -2,30 +2,7 @@
 
 import React, {useCallback, useContext, useEffect, useState} from "react";
 import {io, Socket} from "socket.io-client";
-
-export interface SocketProviderProps {
-  children?: React.ReactNode;
-}
-
-export interface ISocketSentMessage {
-  msg: string,
-  user_email: string,
-  user_name: string,
-  user_image: string
-}
-
-export interface ISocketReceivedMessage {
-  message: string,
-  message_id: string,
-  user_email: string,
-  user_name: string,
-  user_image: string
-}
-
-export interface ISocketContext {
-  sendMessage: (message: string, user_email: string, user_name: string, user_image: string) => void;
-  messages: ISocketReceivedMessage[];
-}
+import {ISocketContext, ISocketReceivedMessage, SocketProviderProps} from "@lib/definitions";
 
 const SocketContext = React.createContext<ISocketContext | null>(null);
 
@@ -41,9 +18,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({children}) => {
   const [messages, setMessages] = useState<ISocketReceivedMessage[]>([]);
 
   const sendMessage: ISocketContext["sendMessage"] = useCallback(
-    (message, user_email, user_name, user_image) => {
+    (msg) => {
       if (!socket) throw new Error(`Socket is undefined`);
-      socket.emit("event:message", {message: message, user_email: user_email, user_name: user_name, user_image: user_image});
+      socket.emit("event:message", {message: msg.msg, user_email: msg.user_email});
     },
     [socket]
   );
