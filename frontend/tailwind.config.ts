@@ -9,9 +9,21 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'hero-pattern': "url('/hero-mobile.png')"
-      }
+      animation: {
+        fadeInUp: 'fadeInUp 0.25s ease-in-out 0s 1',
+      },
+      keyframes: {
+        fadeInUp: {
+          "0%": {
+            opacity: "0",
+            transform: "translate3d(0, 20%, 0)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translate3d(0, 0, 0)",
+          },
+        },
+      },
     }
   },
   plugins: [

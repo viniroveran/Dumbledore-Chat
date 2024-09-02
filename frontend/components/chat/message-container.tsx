@@ -20,7 +20,7 @@ export default function MessageContainer(user: User) {
       <div className="flex flex-col space-y-2">
         {messages.map((message: ISocketReceivedMessage) => {
             return message.user_email == user.email ? (
-              <div key={message.message_id} ref={listRef} className="chat chat-end">
+              <div key={message.message_id} ref={listRef} className="chat chat-end animate-fadeInUp">
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
@@ -37,7 +37,7 @@ export default function MessageContainer(user: User) {
                 <div className="chat-bubble bg-neutral">{message.message}</div>
               </div>
             ) : (
-              <div key={message.message_id} ref={listRef} className="chat chat-start">
+              <div key={message.message_id} ref={listRef} className="chat chat-start animate-fadeInUp">
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
