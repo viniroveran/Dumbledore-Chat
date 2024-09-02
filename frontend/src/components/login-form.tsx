@@ -14,6 +14,8 @@ const LoginForm = () => {
             src={"https://www.svgrepo.com/show/355037/google.svg"}
             className={"w-6 h-6"}
             alt={""}
+            width={64}
+            height={64}
           />
           <div className="ml-1"><span>Login with Google</span></div>
         </div>
