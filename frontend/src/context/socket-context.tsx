@@ -40,10 +40,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({children}) => {
   useEffect(() => {
     const _socket = io(process.env.NEXT_PUBLIC_BACKEND_URL);
     _socket.on("message", onMessageReceived);
-
     setSocket(_socket);
-
-    // TODO: get messages from backend
 
     return () => {
       _socket.off("message", onMessageReceived);

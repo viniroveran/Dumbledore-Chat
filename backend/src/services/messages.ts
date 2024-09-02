@@ -7,6 +7,9 @@ export async function getMessagesWithOffset(offset: number, limit: number) {
     orderBy: {
       createdAt: 'asc',
     },
+    include: {
+      User: true,
+    },
   })
 
   return messages ? messages : false;

@@ -2,10 +2,10 @@
 
 import React, {useEffect, useRef} from "react";
 import Image from "next/image";
-import {User, ISocketReceivedMessage} from "@lib/definitions";
+import {ISocketReceivedMessage} from "@lib/definitions";
 import {useSocket} from "@context/socket-context";
 
-export default function MessageContainer(user: User) {
+export default function MessageContainer(user: any) {
   const {messages} = useSocket();
 
   // Scroll to bottom
@@ -17,6 +17,44 @@ export default function MessageContainer(user: User) {
   return (
     <div className="bg-base-200 flex-1 p-4 overflow-y-auto">
       <div className="flex flex-col space-y-2">
+        {user.previousMsgs.map((message: ISocketReceivedMessage) => {
+            return message.User.email == user.email ? (
+              <div key={message.id} ref={listRef} className="chat chat-end animate-fadeInUp">
+                <div className="chat-image avatar">
+                  <div className="w-10 rounded-full">
+                    <Image
+                      alt={message.User.name}
+                      src={message.User.avatar}
+                      height={128}
+                      width={128}
+                    />
+                  </div>
+                </div>
+                <div className="chat-header">
+                  {message.User.name}
+                </div>
+                <div className="chat-bubble bg-neutral">{message.text}</div>
+              </div>
+            ) : (
+              <div key={message.id} ref={listRef} className="chat chat-start animate-fadeInUp">
+                <div className="chat-image avatar">
+                  <div className="w-10 rounded-full">
+                    <Image
+                      alt={message.User.name}
+                      src={message.User.avatar}
+                      height={128}
+                      width={128}
+                    />
+                  </div>
+                </div>
+                <div className="chat-header">
+                  {message.User.name}
+                </div>
+                <div className="chat-bubble bg-neutral">{message.text}</div>
+              </div>
+            )
+          }
+        )}
         {messages.map((message: ISocketReceivedMessage) => {
             return message.user_email == user.email ? (
               <div key={message.message_id} ref={listRef} className="chat chat-end animate-fadeInUp">

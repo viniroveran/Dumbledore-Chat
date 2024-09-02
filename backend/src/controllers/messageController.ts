@@ -9,7 +9,6 @@ async function getMessages(req: Request, res: Response) {
   if (!hasError) {
     try {
       getMessagesWithOffset(offset, limit).then((messages) => {
-        console.log(messages);
         res.status(200).json({
           status_code: 200,
           messages: messages
