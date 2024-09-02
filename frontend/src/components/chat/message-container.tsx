@@ -16,10 +16,10 @@ export default function MessageContainer(user: any) {
 
   return (
     <div className="bg-base-200 flex-1 p-4 overflow-y-auto">
-      <div className="flex flex-col space-y-2">
+      <div ref={listRef} className="flex flex-col space-y-2">
         {user.previousMsgs.map((message: ISocketReceivedMessage) => {
             return message.User.email == user.email ? (
-              <div key={message.id} ref={listRef} className="chat chat-end animate-fadeInUp">
+              <div key={message.id} className="chat chat-end animate-fadeInUp">
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
@@ -36,7 +36,7 @@ export default function MessageContainer(user: any) {
                 <div className="chat-bubble bg-neutral">{message.text}</div>
               </div>
             ) : (
-              <div key={message.id} ref={listRef} className="chat chat-start animate-fadeInUp">
+              <div key={message.id} className="chat chat-start animate-fadeInUp">
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
@@ -57,7 +57,7 @@ export default function MessageContainer(user: any) {
         )}
         {messages.map((message: ISocketReceivedMessage) => {
             return message.user_email == user.email ? (
-              <div key={message.message_id} ref={listRef} className="chat chat-end animate-fadeInUp">
+              <div key={message.message_id} className="chat chat-end animate-fadeInUp">
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
@@ -74,7 +74,7 @@ export default function MessageContainer(user: any) {
                 <div className="chat-bubble bg-neutral">{message.message}</div>
               </div>
             ) : (
-              <div key={message.message_id} ref={listRef} className="chat chat-start animate-fadeInUp">
+              <div key={message.message_id} className="chat chat-start animate-fadeInUp">
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <Image
